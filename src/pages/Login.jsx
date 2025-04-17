@@ -1,18 +1,26 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
+import { loginUser } from '../api/auth';
 import AuthForm from '../components/Auth/AuthForm';
 import { useAuth } from '../context/AuthContext';
+
 import styles from './AuthPage.module.css';
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleSubmit = ({ email, password }) => {
-    console.log('Login ==>', email, password);
-    login();
-    navigate('/news-feed');
+  const handleSubmit = async ({ email, password }) => {
+    try {
+      const data = await loginUser(email, password);
+      console.log('Login successful:', data);
+
+      login();
+      navigate('/news-feed');
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (

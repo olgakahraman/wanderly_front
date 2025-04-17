@@ -2,18 +2,24 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthForm from '../components/Auth/AuthForm';
 import { useAuth } from '../context/AuthContext';
+ import { registerUser } from '../api/auth';
 import styles from './AuthPage.module.css';
 
 const Registration = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleSubmit = ({ email, password }) => {
-    console.log('Register ==>', email, password);
-    login();
-    navigate('/news-feed');
-  };
+  const handleSubmit = async ({ email, password }) => {
+    try {
+      const data = await registerUser(email, password);
+      console.log('Registration successful:', data);
 
+      login();
+      navigate('/news-feed');
+    } catch (error) {
+      alert(error.message);
+    }
+  };
   return (
     <div className={`container-fluid ${styles.authContainer}`}>
       <div className='row'>

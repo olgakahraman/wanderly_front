@@ -1,12 +1,64 @@
-# React + Vite
+# Wanderly Frontend — Travel Social Network
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🌍 A beautiful social platform for travelers to share their journeys and experiences.
 
-Currently, two official plugins are available:
+🔗 **Live App**: [https://wanderly-front.onrender.com](https://wanderly-front.onrender.com)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 📌 Project Ownership
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+This frontend was designed and developed entirely by **OLGA DIETIUK KAHRAMAN** as part of a personal portfolio project. All components, architecture, and styling are original unless otherwise noted.
+
+---
+
+## 🌟 Features
+
+- 🔐 User authentication (Login / Register / Forgot Password)
+- 📝 Post creation with text and location tagging
+- 🗺️ Interactive travel feed and maps (coming soon)
+- 👤 User profile with travel stats
+- 📱 Responsive and mobile-first UI
+
+---
+
+## 🛠️ Tech Stack
+
+- **React.js**
+- **React Router DOM** for routing
+- **Bootstrap** for styling
+- **Framer Motion** for animations
+- **Yup** and **React Hook Form** for form validation
+- **Custom AuthContext** for authentication flow
+- **Fetch API** for connecting to the backend
+- **CSS Modules** for scoped styles
+
+---
+
+## 📦 Used Libraries and Imports
+
+```js
+import { Suspense, lazy } from 'react';
+import { Route, Routes, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+
+
+##🚀 How to Run Locally
+
+git clone "https://github.com/olgakahraman/wanderly_front"
+cd client
+npm install
+VITE_API_URL="https://wanderly-back.onrender.com"
+npm run dev
+
+
+
+
+
+© 2025 Wanderly — all rights reserved. 
+Developed by OLGA DIETIUK KAHRAMAN.
