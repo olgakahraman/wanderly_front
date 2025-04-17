@@ -1,0 +1,26 @@
+.navNavbar {
+  background: none;
+  padding: 1rem;
+}
+
+.navLink {
+  text-decoration: none;
+  color: #ff2d6d;
+  background: none;
+  border: none;
+}
+
+.navLink i {
+  color: #ff2d6d;
+  font-size: 1.3em;
+}
+
+.navLink:hover i,
+.activeLink i {
+  color: lime !important;
+}
+
+.navLink:hover,
+.activeLink {
+  color: lime !important;
+}
