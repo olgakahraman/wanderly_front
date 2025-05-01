@@ -15,7 +15,7 @@ const Login = () => {
     try {
       const data = await loginUser(email, password);
       console.log('Login successful:', data);
-
+      localStorage.setItem('token', data.token);
       login();
       navigate('/news-feed');
     } catch (error) {
