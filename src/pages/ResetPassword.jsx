@@ -1,17 +1,17 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { resetPassword } from '../api/auth';
+import AuthForm from '../components/Auth/AuthForm';
 import styles from './AuthPage.module.css';
 
 const ResetPassword = () => {
   const { token } = useParams();
   const navigate = useNavigate();
-  const [password, setPassword] = useState('');
   const [message, setMessage] = useState({ text: '', type: '' });
 
-  const handleSubmit = async e => {
-    e.preventDefault();
+  const handleReset = async ({ password }) => {
     try {
       await resetPassword(token, password);
       setMessage({
@@ -30,8 +30,26 @@ const ResetPassword = () => {
   return (
     <div className={`container-fluid ${styles.authContainer}`}>
       <div className='row'>
-        <div className='col-md-6 offset-md-3'>
-          <h2 className='mb-4'>Reset your password</h2>
+        <motion.div
+          className={`col-md-6 ${styles.leftSection}`}
+          initial={{ opacity: 0, x: -100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        >
+          <img
+            src='/images/wanderly-2.jpeg'
+            alt='Reset password illustration'
+            className={styles.image}
+          />
+        </motion.div>
+        <motion.div
+          className={`col-md-6 d-flex flex-column justify-content-center align-items-center ${styles.rightSection}`}
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        >
+          <h1 className={`mb-4 ${styles.heading}`}>Set New Password</h1>
+          
           {message.text && (
             <div
               className={`alert alert-${
@@ -41,23 +59,11 @@ const ResetPassword = () => {
               {message.text}
             </div>
           )}
-          <form onSubmit={handleSubmit}>
-            <div className='form-group mb-3'>
-              <label className='form-label'>New Password</label>
-              <input
-                type='password'
-                className='form-control'
-                placeholder='Enter new password'
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <button type='submit' className='btn btn-primary'>
-              Update Password
-            </button>
-          </form>
-        </div>
+          <AuthForm type='reset-password' onSubmit={handleReset} />
+          <p className={`mt-3 ${styles.link}`}>
+            Remember your password? <a href='/login'>Login</a>
+          </p>
+        </motion.div>
       </div>
     </div>
   );

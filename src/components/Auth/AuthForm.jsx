@@ -28,9 +28,21 @@ const getValidationSchema = type => {
       .required('Confirm your password'),
   };
 
+  const reset = {
+    password: yup
+      .string()
+      .min(6, 'Minimum 6 characters')
+      .required('Password is required'),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref('password')], 'Passwords must match')
+      .required('Confirm your password'),
+  };
+
   if (type === 'login') return yup.object(login);
   if (type === 'register') return yup.object(register);
   if (type === 'forgot-password') return yup.object(base);
+  if (type === 'reset-password') return yup.object(reset);
 
   return yup.object();
 };
@@ -93,10 +105,32 @@ const AuthForm = ({ type, onSubmit }) => {
           />
         )}
 
+        {type === 'reset-password' && (
+          <>
+            <AuthInput
+              name='password'
+              type='password'
+              placeholder='New Password'
+              register={register}
+              error={errors.password?.message}
+              autoComplete='new-password'
+            />
+            <AuthInput
+              name='confirmPassword'
+              type='password'
+              placeholder='Confirm New Password'
+              register={register}
+              error={errors.confirmPassword?.message}
+              autoComplete='new-password'
+            />
+          </>
+        )}
+
         <AuthButton type='submit'>
-          {type === 'login' && 'Let`s Go'}
+          {type === 'login' && `Let's Go`}
           {type === 'register' && 'Start Wandering'}
           {type === 'forgot-password' && 'Reset Password'}
+          {type === 'reset-password' && 'Update Password'}
         </AuthButton>
       </div>
     </form>

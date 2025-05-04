@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { requestPasswordReset } from '../api/auth';
 import AuthForm from '../components/Auth/AuthForm.jsx';
-
 import styles from './AuthPage.module.css';
 
 const ForgotPassword = () => {

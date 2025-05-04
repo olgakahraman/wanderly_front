@@ -13,7 +13,7 @@ const PublicRoutes = [
   { path: '/login', element: <Login /> },
   { path: '/registration', element: <Registration /> },
   { path: '/forgot-password', element: <ForgotPassword /> },
-  { path: '/resetPassword/:token', element: <ResetPassword /> },
+  { path: '/reset-password/:token', element: <ResetPassword /> },
 ];
 
 export default PublicRoutes;
