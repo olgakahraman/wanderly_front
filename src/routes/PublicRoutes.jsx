@@ -5,6 +5,7 @@ const WelcomePage = lazy(() => import('../components/Welcome/WelcomePage.jsx'));
 const Login = lazy(() => import('../pages/Login.jsx'));
 const Registration = lazy(() => import('../pages/Registration.jsx'));
 const ForgotPassword = lazy(() => import('../pages/ForgotPassword.jsx'));
+const ResetPassword = lazy(() => import('../pages/ResetPassword.jsx'));
 
 const PublicRoutes = [
   { path: '/', element: <Home /> },
@@ -12,6 +13,7 @@ const PublicRoutes = [
   { path: '/login', element: <Login /> },
   { path: '/registration', element: <Registration /> },
   { path: '/forgot-password', element: <ForgotPassword /> },
+  { path: '/resetPassword/:token', element: <ResetPassword /> },
 ];
 
 export default PublicRoutes;

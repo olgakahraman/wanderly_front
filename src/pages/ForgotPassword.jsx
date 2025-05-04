@@ -1,12 +1,18 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { requestPasswordReset } from '../api/auth';
 import AuthForm from '../components/Auth/AuthForm.jsx';
+
 import styles from './AuthPage.module.css';
 
 const ForgotPassword = () => {
-  const handleSubmit = ({ email }) => {
-    console.log('Reset password for ==>', email);
-    alert('If this email exists, reset instructions will be sent.');
+  const handleSubmit = async ({ email }) => {
+    try {
+      await requestPasswordReset(email);
+      alert('If this email exists, reset instructions were sent.');
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   return (

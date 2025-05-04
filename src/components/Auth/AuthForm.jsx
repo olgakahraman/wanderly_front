@@ -76,6 +76,9 @@ const AuthForm = ({ type, onSubmit }) => {
             placeholder='Password'
             register={register}
             error={errors.password?.message}
+            autoComplete={
+              type === 'login' ? 'current-password' : 'new-password'
+            }
           />
         )}
 
@@ -86,6 +89,7 @@ const AuthForm = ({ type, onSubmit }) => {
             placeholder='Confirm Password'
             register={register}
             error={errors.confirmPassword?.message}
+            autoComplete='new-password'
           />
         )}
 

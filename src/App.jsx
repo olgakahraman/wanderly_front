@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import BigLoader from './components/BigLoader/BigLoader.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import PrivateRoutes from './routes/PrivateRoutes.jsx';
@@ -14,7 +15,7 @@ function App() {
   return (
     <AuthProvider>
       <Navbar />
-      <Suspense fallback={<div className='loading'>Loading...</div>}>
+      <Suspense fallback={<BigLoader />}>
         <Routes>
           {PublicRoutes.map(({ path, element }) => (
             <Route key={path} path={path} element={element} />

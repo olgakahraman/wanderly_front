@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../api/auth';
 import AuthForm from '../components/Auth/AuthForm';
@@ -10,16 +11,21 @@ import styles from './AuthPage.module.css';
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [message, setMessage] = useState({ text: '', type: '' });
 
   const handleSubmit = async ({ email, password }) => {
     try {
       const data = await loginUser(email, password);
       console.log('Login successful:', data);
       localStorage.setItem('token', data.token);
-      login();
-      navigate('/news-feed');
+      login(data.token);
+      setMessage({ text: 'Login successful! Redirecting...', type: 'success' });
+      setTimeout(() => navigate('/news-feed'), 1500);
     } catch (error) {
-      alert(error.message);
+      setMessage({
+        text: error.message || 'Login failed. Please try again.',
+        type: 'error',
+      });
     }
   };
 
@@ -45,6 +51,15 @@ const Login = () => {
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
           <h1 className={`mb-4 ${styles.heading}`}>Login</h1>
+          {message.text && (
+            <div
+              className={`alert alert-${
+                message.type === 'success' ? 'success' : 'danger'
+              } mb-3`}
+            >
+              {message.text}
+            </div>
+          )}
           <AuthForm type='login' onSubmit={handleSubmit} />
           <p className={styles.link}>
             <Link to='/forgot-password'>Forgot password?</Link>
