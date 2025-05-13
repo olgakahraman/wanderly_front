@@ -13,31 +13,36 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const validateToken = () => {
-      const token = localStorage.getItem('token');
+      const storedToken = localStorage.getItem('token');
 
-      if (!token) {
+      if (!storedToken) {
         setIsLoading(false);
+         setIsAuthenticated(false);
         return;
       }
 
       try {
-        const decoded = jwtDecode(token);
+        const decoded = jwtDecode(storedToken);
         const isExpired = decoded.exp * 1000 < Date.now();
 
         if (isExpired) {
           localStorage.removeItem('token');
           setIsAuthenticated(false);
+          setToken(null);
         } else {
           setIsAuthenticated(true);
+          setToken(storedToken);
         }
       } catch (error) {
         console.error('Token validation error:', error);
         localStorage.removeItem('token');
         setIsAuthenticated(false);
+        setToken(null);
       } finally {
         setIsLoading(false);
       }
@@ -47,9 +52,10 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = useCallback(
-    token => {
-      localStorage.setItem('token', token);
+    newToken => {
+      localStorage.setItem('token', newToken);
       setIsAuthenticated(true);
+      setToken(newToken);
       navigate('/news-feed');
     },
     [navigate]
@@ -58,25 +64,25 @@ export const AuthProvider = ({ children }) => {
   const logout = useCallback(() => {
     localStorage.removeItem('token');
     setIsAuthenticated(false);
+    setToken(null);
     navigate('/login');
   }, [navigate]);
 
-  const getCurrentUser = useCallback(() => {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-
-    try {
-      return jwtDecode(token);
-    } catch {
-      return null;
-    }
-  }, []);
+   const getCurrentUser = useCallback(() => {
+     if (!token) return null;
+     try {
+       return jwtDecode(token);
+     } catch {
+       return null;
+     }
+   }, [token]);
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated,
         isLoading,
+        token, 
         login,
         logout,
         getCurrentUser,

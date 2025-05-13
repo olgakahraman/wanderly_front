@@ -5,8 +5,11 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import styles from './Navbar.module.css';
 
 function Navbar() {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isLoading, logout } = useAuth();
   const location = useLocation();
+  if (isLoading) {
+    return null;
+  }
 
   const unauthPages = [
     '/login',
