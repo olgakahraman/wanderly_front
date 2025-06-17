@@ -14,7 +14,24 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+
+  const decodeAndSetUser = useCallback(tokenToDecode => {
+    try {
+      const decoded = jwtDecode(tokenToDecode);
+      const userData = {
+        userId: decoded.userId,
+        username: decoded.username,
+      };
+      setUser(userData);
+      return userData;
+    } catch (error) {
+      console.error('Token decode error:', error);
+      setUser(null);
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
     const validateToken = () => {
@@ -22,18 +39,26 @@ export const AuthProvider = ({ children }) => {
 
       if (!storedToken) {
         setIsLoading(false);
-         setIsAuthenticated(false);
+        setIsAuthenticated(false);
+        setUser(null);
         return;
       }
 
       try {
         const decoded = jwtDecode(storedToken);
+        const userData = {
+          userId: decoded.userId,
+          username: decoded.username,
+        };
+        setUser(userData);
+
         const isExpired = decoded.exp * 1000 < Date.now();
 
         if (isExpired) {
           localStorage.removeItem('token');
           setIsAuthenticated(false);
           setToken(null);
+          setUser(null);
         } else {
           setIsAuthenticated(true);
           setToken(storedToken);
@@ -43,6 +68,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
         setIsAuthenticated(false);
         setToken(null);
+        setUser(null);
       } finally {
         setIsLoading(false);
       }
@@ -53,36 +79,42 @@ export const AuthProvider = ({ children }) => {
 
   const login = useCallback(
     newToken => {
+      const userData = decodeAndSetUser(newToken);
+
       localStorage.setItem('token', newToken);
       setIsAuthenticated(true);
       setToken(newToken);
+
+      console.log('Login successful, user data:', userData);
       navigate('/news-feed');
     },
-    [navigate]
+    [navigate, decodeAndSetUser]
   );
 
   const logout = useCallback(() => {
     localStorage.removeItem('token');
     setIsAuthenticated(false);
     setToken(null);
+    setUser(null);
     navigate('/login');
   }, [navigate]);
 
-   const getCurrentUser = useCallback(() => {
-     if (!token) return null;
-     try {
-       return jwtDecode(token);
-     } catch {
-       return null;
-     }
-   }, [token]);
+  const getCurrentUser = useCallback(() => {
+    if (!token) return null;
+    try {
+      return jwtDecode(token);
+    } catch {
+      return null;
+    }
+  }, [token]);
 
   return (
     <AuthContext.Provider
       value={{
+        user,
         isAuthenticated,
         isLoading,
-        token, 
+        token,
         login,
         logout,
         getCurrentUser,

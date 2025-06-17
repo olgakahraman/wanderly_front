@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
@@ -70,15 +69,14 @@ const AuthForm = ({ type, onSubmit }) => {
         {(type === 'login' ||
           type === 'register' ||
           type === 'forgot-password') && (
-          <>
-            <AuthInput
-              name='email'
-              type='email'
-              placeholder='Email'
-              register={register}
-              error={errors.email?.message}
-            />
-          </>
+          <AuthInput
+            name='email'
+            type='email'
+            placeholder='Email'
+            register={register}
+            error={errors.email?.message}
+            autoComplete='email'
+          />
         )}
 
         {(type === 'login' || type === 'register') && (
