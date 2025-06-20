@@ -2,7 +2,9 @@
   background: none;
   padding: 1rem;
 }
-
+.userInfo{
+  color:green;
+}
 .navLink {
   text-decoration: none;
   color: #ff2d6d;

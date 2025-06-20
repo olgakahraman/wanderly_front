@@ -22,7 +22,10 @@ export const AuthProvider = ({ children }) => {
       const decoded = jwtDecode(tokenToDecode);
       const userData = {
         userId: decoded.userId,
-        username: decoded.username,
+        username:
+          decoded.username ||
+          (decoded.email ? decoded.email.split('@')[0] : 'User'),
+        email: decoded.email,
       };
       setUser(userData);
       return userData;
@@ -33,49 +36,52 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    const validateToken = () => {
-      const storedToken = localStorage.getItem('token');
+  const validateToken = useCallback(() => {
+    const storedToken = localStorage.getItem('token');
 
-      if (!storedToken) {
-        setIsLoading(false);
-        setIsAuthenticated(false);
-        setUser(null);
-        return;
-      }
+    if (!storedToken) {
+      setIsLoading(false);
+      setIsAuthenticated(false);
+      setUser(null);
+      return;
+    }
 
-      try {
-        const decoded = jwtDecode(storedToken);
-        const userData = {
-          userId: decoded.userId,
-          username: decoded.username,
-        };
-        setUser(userData);
+    try {
+      const decoded = jwtDecode(storedToken);
+      const userData = {
+        userId: decoded.userId,
+        username:
+          decoded.username ||
+          (decoded.email ? decoded.email.split('@')[0] : 'User'),
+        email: decoded.email,
+      };
+      setUser(userData);
 
-        const isExpired = decoded.exp * 1000 < Date.now();
+      const isExpired = decoded.exp * 1000 < Date.now();
 
-        if (isExpired) {
-          localStorage.removeItem('token');
-          setIsAuthenticated(false);
-          setToken(null);
-          setUser(null);
-        } else {
-          setIsAuthenticated(true);
-          setToken(storedToken);
-        }
-      } catch (error) {
-        console.error('Token validation error:', error);
+      if (isExpired) {
         localStorage.removeItem('token');
         setIsAuthenticated(false);
         setToken(null);
         setUser(null);
-      } finally {
-        setIsLoading(false);
+      } else {
+        setIsAuthenticated(true);
+        setToken(storedToken);
       }
-    };
-
-    validateToken();
+    } catch (error) {
+      console.error('Token validation error:', error);
+      localStorage.removeItem('token');
+      setIsAuthenticated(false);
+      setToken(null);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    validateToken();
+  }, [validateToken]);
 
   const login = useCallback(
     newToken => {

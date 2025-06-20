@@ -5,8 +5,9 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import styles from './Navbar.module.css';
 
 function Navbar() {
-  const { isAuthenticated, isLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading, logout, user } = useAuth();
   const location = useLocation();
+
   if (isLoading) {
     return null;
   }
@@ -26,9 +27,16 @@ function Navbar() {
       aria-label='Main navigation'
     >
       <div className='container-fluid'>
-        <NavLink className={styles.navLink} to='/' title='Home'>
-          Wanderly
-        </NavLink>
+        <div className='d-flex align-items-center'>
+          <NavLink className={styles.navLink} to='/' title='Home'>
+            Wanderly
+          </NavLink>
+          {isAuthenticated && user && (
+            <span className={styles.userInfo}>
+              &nbsp;|&nbsp;Hello, @{user?.email?.split('@')[0] || 'User'}
+            </span>
+          )}
+        </div>
         <div className='navbarNav' id='navbarNav'>
           <ul className='navbar-nav d-flex flex-row'>
             {isAuthenticated && !isOnUnauthPage && (
