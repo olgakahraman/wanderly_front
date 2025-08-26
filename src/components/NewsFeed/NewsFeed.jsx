@@ -8,6 +8,7 @@ import {
 } from '../../api/posts';
 import { useAuth } from '../../context/AuthContext';
 import PostList from '../Post/PostList';
+import PageTitle from '../../components/Layout/PageTitle/PageTitle';
 import styles from './NewsFeed.module.css';
 
 const NewsFeed = () => {
@@ -183,8 +184,6 @@ const NewsFeed = () => {
 
   return (
     <div className={styles.newsFeed}>
-      <h1 className={styles.title}>Travel Stories</h1>
-
       {notification && (
         <div
           className={`${styles.notification} ${
@@ -194,7 +193,9 @@ const NewsFeed = () => {
           {notification.message}
         </div>
       )}
-
+      <PageTitle subtitle='Share your travel experiences'>
+        Travel Stories
+      </PageTitle>
       <PostList
         posts={posts}
         onLike={handleLike}

@@ -1,4 +1,5 @@
 import { jwtDecode } from 'jwt-decode';
+import PropTypes from 'prop-types';
 import {
   createContext,
   useCallback,
@@ -132,6 +133,10 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export const useAuth = () => {

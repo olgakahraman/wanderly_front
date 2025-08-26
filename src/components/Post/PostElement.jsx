@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { avatarUrl } from '../../utils/avatarUrl';
+import PropTypes from 'prop-types';
+
 import styles from './Post.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -142,19 +145,9 @@ const PostElement = ({ post, onLike, onDelete, onUpdate, likingPostId }) => {
         <div className={styles.authorBox}>
           <img
             className={styles.authorAvatar}
-            src={
-              post?.author?.hasAvatar
-                ? makeUrl(
-                    `/api/v1/users/${post.author._id || post.author}/avatar`
-                  )
-                : '/default-avatar.jpg'
-            }
+            src={avatarUrl(post?.author)}
             alt='author'
             loading='lazy'
-            onError={e => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = '/default-avatar.jpg';
-            }}
           />
           <span className={styles.author}>
             {' '}
@@ -286,6 +279,39 @@ const PostElement = ({ post, onLike, onDelete, onUpdate, likingPostId }) => {
       </div>
     </div>
   );
+};
+
+PostElement.propTypes = {
+  post: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    author: PropTypes.oneOfType([
+      PropTypes.string, 
+      PropTypes.shape({
+        _id: PropTypes.string,
+        username: PropTypes.string,
+        email: PropTypes.string,
+        hasAvatar: PropTypes.bool,
+      }),
+    ]),
+    images: PropTypes.arrayOf(PropTypes.string),
+    tags: PropTypes.arrayOf(PropTypes.string),
+    likes: PropTypes.array, 
+    createdAt: PropTypes.string,
+    location: PropTypes.string,
+  }).isRequired,
+  onLike: PropTypes.func,
+  onDelete: PropTypes.func,
+  onUpdate: PropTypes.func,
+  likingPostId: PropTypes.string,
+};
+
+PostElement.defaultProps = {
+  onLike: undefined,
+  onDelete: undefined,
+  onUpdate: undefined,
+  likingPostId: undefined,
 };
 
 export default PostElement;

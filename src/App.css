@@ -1,4 +1,38 @@
-* {
-  margin: 0;
-  padding: 0;
+/* App.css (global) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --nav-height: 64px; /* keep navbar height consistent */
+}
+
+html, body, #root { height: 100%; }
+body { margin: 0; }
+
+/* background image layer */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url('/images/wanderly-2.jpeg') center / cover no-repeat fixed;
+  z-index: -2;
+}
+
+/* soft white veil to make content readable */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.25);
+  z-index: -1;
+}
+
+/* space below navbar so content doesn't hide under it */
+.page-container {
+  padding: calc(var(--nav-height) + 12px) 16px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 }

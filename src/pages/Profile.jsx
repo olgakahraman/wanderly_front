@@ -1,10 +1,11 @@
 import styles from '../components/Post/Post.module.css';
 import MyProfile from '../components/Profile/MyProfile';
+import PageTitle from '../components/Layout/PageTitle/PageTitle';
 
 const Profile = () => {
   return (
     <div>
-      <h1 className={styles.pageTitle}>My Profile</h1>
+      <PageTitle>My Profile</PageTitle>
       <MyProfile />
     </div>
   );

@@ -1,0 +1,39 @@
+.pageTitleWrapper {
+  max-width: 770px; 
+  margin: 6rem auto 0; 
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.pageTitle {
+  color: #ff105f;
+  font-family: 'Style Script', cursive;
+  font-size: 3rem;
+  
+}
+h1{
+  margin:0;
+  
+}
+
+.subtitle {
+  text-align: center;
+  font-size: .95rem;
+  color: white;
+  border-radius: 10px;
+  display: inline-block;
+  opacity:0.7;
+  font-family: lato;
+}
+
+
+@media (max-width: 676px) {
+  .pageTitleWrapper {
+    border-radius: 0;
+  }
+}

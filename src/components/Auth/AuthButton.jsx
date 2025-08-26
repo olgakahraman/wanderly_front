@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 import styles from './AuthButton.module.css';
 
 const AuthButton = ({ children, ...props }) => {
@@ -8,5 +8,7 @@ const AuthButton = ({ children, ...props }) => {
     </button>
   );
 };
-
+AuthButton.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 export default AuthButton;

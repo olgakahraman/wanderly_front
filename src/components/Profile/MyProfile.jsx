@@ -34,11 +34,12 @@ const MyProfile = () => {
       setUsername(data.username || '');
       setBio(data.bio || '');
       setAvatarPreview(
-        data.avatar
+        data.hasAvatar
           ? `${API_URL}/api/v1/users/${data._id}/avatar?t=${Date.now()}`
           : DEFAULT_AVATAR
       );
       setAvatarFile(null);
+      updateUser({ hasAvatar: !!data.hasAvatar });
     } catch (err) {
       showNotification(err.message || 'Failed to load profile', true);
     }
@@ -47,6 +48,12 @@ const MyProfile = () => {
   useEffect(() => {
     if (token) loadProfile();
   }, [token]);
+
+   useEffect(() => {
+   return () => {
+     if (avatarPreview?.startsWith('blob:')) URL.revokeObjectURL(avatarPreview);
+   };
+ }, [avatarPreview]);
 
   const handleAvatarChange = async e => {
     const file = e.target.files?.[0];
@@ -101,8 +108,8 @@ const MyProfile = () => {
         setAvatarPreview(
           `${API_URL}/api/v1/users/${profile._id}/avatar?t=${Date.now()}`
         );
+        updateUser({ hasAvatar: true });
       }
-      updateUser({ username: username.trim(), bio: bio.trim() });
 
       const refreshRes = await fetch(`${API_URL}/api/v1/auth/refresh-token`, {
         method: 'POST',
@@ -132,7 +139,12 @@ const MyProfile = () => {
       await fetchWithAuth(`${API_URL}/api/v1/users/me/avatar`, {
         method: 'DELETE',
       });
-      await loadProfile();
+      if (avatarPreview?.startsWith('blob:'))
+        URL.revokeObjectURL(avatarPreview);
+      setAvatarPreview(DEFAULT_AVATAR);
+      setAvatarFile(null);
+      updateUser({ hasAvatar: false });
+      (await loadProfile()); 
       showNotification('Avatar deleted');
     } catch (err) {
       showNotification(err.message || 'Failed to delete avatar', true);
@@ -232,6 +244,9 @@ const MyProfile = () => {
             ) : (
               <h2 className={styles.username}>{profile.username}</h2>
             )}
+            {!isEditing && (
+              <small className={styles.email}>{profile.email}</small>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
@@ -248,8 +263,6 @@ const MyProfile = () => {
               <p className={styles.bio}>{profile.bio}</p>
             ) : null}
           </div>
-
-          {!isEditing && <p className={styles.email}>{profile.email}</p>}
         </div>
 
         <div className={styles.userActions}>

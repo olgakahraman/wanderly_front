@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import CreatePostForm from '../components/Post/CreatePostForm';
 import styles from '../components/Post/Post.module.css';
 import { useAuth } from '../context/AuthContext';
+import PageTitle from '../components/Layout/PageTitle/PageTitle';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -50,10 +51,10 @@ const CreatePost = () => {
 
   return (
     <div className={styles.createPostPage}>
-      <h1 className={styles.pageTitle}>Create New Travel Post</h1>
       <Suspense
         fallback={<div className={styles.loading}>Loading form...</div>}
       >
+        <PageTitle>Create New Travel Post</PageTitle>
         <CreatePostForm onSubmit={handleSubmit} submitting={submitting} />
       </Suspense>
     </div>

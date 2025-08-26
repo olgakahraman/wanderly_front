@@ -41,8 +41,25 @@
   
 }
 .heading{
-   font-size: 4rem;
+  font-size: 4rem;
   font-weight: bold;
   font-family: Style Script;
   color:#ff105f
+}
+
+@media (max-width: 768px) {
+  .authContainer {
+    flex-direction: column-reverse; 
+  }
+
+  .leftSection,
+  .rightSection {
+    width: 100%; 
+    height: auto; 
+  }
+
+  .image {
+    height: auto;
+    border-radius: 0; 
+  }
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { compressImage } from '../../utils/imageCompression';
+import PropTypes from 'prop-types';
 import styles from './Post.module.css';
 
 const MAX_FILES = 10;
@@ -210,10 +211,19 @@ const CreatePostForm = ({ onSubmit, submitting = false }) => {
       </div>
 
       <button type='submit' className={styles.button} disabled={submitting}>
-        {submitting ? 'Publishing…' : 'Publish Post'}+{' '}
+        {submitting ? 'Publishing…' : 'Publish Post'}{' '}
       </button>
     </form>
   );
+};
+
+CreatePostForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  submitting: PropTypes.bool,
+};
+
+CreatePostForm.defaultProps = {
+  submitting: false,
 };
 
 export default CreatePostForm;

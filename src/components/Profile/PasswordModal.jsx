@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import styles from './MyProfile.module.css';
 
 const PasswordModal = ({ isOpen, onClose, onChangePassword }) => {
@@ -145,6 +146,12 @@ const PasswordModal = ({ isOpen, onClose, onChangePassword }) => {
       </div>
     </div>
   );
+};
+
+PasswordModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onChangePassword: PropTypes.func.isRequired,
 };
 
 export default PasswordModal;

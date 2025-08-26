@@ -15,6 +15,7 @@
     "framer-motion": "^12.7.3",
     "jwt-decode": "^4.0.0",
     "npm": "^11.4.1",
+    "prop-types": "^15.8.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.55.0",
