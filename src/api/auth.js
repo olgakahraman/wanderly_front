@@ -50,10 +50,10 @@ export const resetPassword = async (token, password) => {
   const res = await fetch(`${API_URL}/api/v1/auth/reset-password`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token, password }),
+    body: JSON.stringify({ token, newPassword: password }),
   });
 
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.msg || 'Failed to reset password');
   return data;
 };

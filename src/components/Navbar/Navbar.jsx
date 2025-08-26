@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { avatarUrl } from '../../utils/avatarUrl';
 import styles from './Navbar.module.css';
 
 function Navbar() {
@@ -32,9 +33,20 @@ function Navbar() {
             Wanderly
           </NavLink>
           {isAuthenticated && user && (
-            <span className={styles.userInfo}>
-              &nbsp;|&nbsp;Hello, @{user?.email?.split('@')[0] || 'User'}
-            </span>
+            <div className={styles.userBubble}>
+              <img
+                src={avatarUrl(user._id || user.userId)}
+                alt='avatar'
+                className={styles.userAvatar}
+                onError={e => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/images/default-avatar.jpg';
+                }}
+              />
+              <span className={styles.userInfo}>
+                {user?.username || user?.email?.split('@')[0] || 'User'}
+              </span>
+            </div>
           )}
         </div>
         <div className='navbarNav' id='navbarNav'>

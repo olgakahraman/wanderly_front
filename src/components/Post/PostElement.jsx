@@ -1,12 +1,17 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import styles from './Post.module.css';
 
+const API_URL = import.meta.env.VITE_API_URL;
+const makeUrl = src => (src?.startsWith('http') ? src : `${API_URL}${src}`);
+
 const PostElement = ({ post, onLike, onDelete, onUpdate, likingPostId }) => {
   const { user } = useAuth();
+
   const isLiking = likingPostId === post._id;
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
   const [editedData, setEditedData] = useState({
     title: post.title,
     content: post.content,
@@ -14,11 +19,19 @@ const PostElement = ({ post, onLike, onDelete, onUpdate, likingPostId }) => {
     tags: Array.isArray(post.tags) ? post.tags.join(', ') : post.tags || '',
   });
 
-  const isAuthor =
-    user &&
-    (user.userId === post.author?._id ||
-      user.userId === post.author?.toString() ||
-      user._id === post.author?._id);
+  const isAuthor = useMemo(() => {
+    if (!user) return false;
+    const uid = user.userId || user._id;
+    const authorId =
+      (post.author && (post.author._id || post.author.toString?.())) || null;
+    return uid && authorId && String(uid) === String(authorId);
+  }, [user, post.author]);
+
+  const isLiked = useMemo(() => {
+    if (!user || !Array.isArray(post.likes)) return false;
+    const uid = user.userId || user._id;
+    return post.likes.some(id => String(id) === String(uid));
+  }, [user, post.likes]);
 
   const handleEditChange = e => {
     const { name, value } = e.target;
@@ -43,7 +56,7 @@ const PostElement = ({ post, onLike, onDelete, onUpdate, likingPostId }) => {
           editedData.tags
             ?.split(',')
             .map(t => t.trim())
-            .filter(t => t) || [],
+            .filter(Boolean) || [],
       };
 
       const success = await onUpdate(post._id, updateData);
@@ -74,6 +87,22 @@ const PostElement = ({ post, onLike, onDelete, onUpdate, likingPostId }) => {
           rows={5}
           required
         />
+        {Array.isArray(post.images) && post.images.length > 0 && (
+          <div className={styles.gallery}>
+            {post.images.map((src, i) => (
+              <img
+                key={`${post._id}-img-${i}`}
+                src={makeUrl(src)}
+                alt=''
+                className={styles.galleryImg}
+                loading='lazy'
+                onError={e => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            ))}
+          </div>
+        )}
         <input
           name='location'
           value={editedData.location}
@@ -110,9 +139,28 @@ const PostElement = ({ post, onLike, onDelete, onUpdate, likingPostId }) => {
   return (
     <div className={styles.postCard}>
       <div className={styles.postMeta}>
-        <span className={styles.author}>
-          Posted by: {post.author?.username || post.author?.email || 'Unknown'}
-        </span>
+        <div className={styles.authorBox}>
+          <img
+            className={styles.authorAvatar}
+            src={
+              post?.author?.hasAvatar
+                ? makeUrl(
+                    `/api/v1/users/${post.author._id || post.author}/avatar`
+                  )
+                : '/default-avatar.jpg'
+            }
+            alt='author'
+            loading='lazy'
+            onError={e => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/default-avatar.jpg';
+            }}
+          />
+          <span className={styles.author}>
+            {' '}
+            {post.author?.username || post.author?.email || 'Unknown'}
+          </span>
+        </div>
         <span className={styles.postDate}>
           {new Date(post.createdAt).toLocaleString(undefined, {
             dateStyle: 'medium',
@@ -128,6 +176,78 @@ const PostElement = ({ post, onLike, onDelete, onUpdate, likingPostId }) => {
         <p className={styles.postLocation}>📍 {post.location}</p>
       )}
 
+      {Array.isArray(post.images) &&
+        post.images.length > 0 &&
+        (() => {
+          const carouselId = `post-${post._id}-carousel`;
+          return (
+            <div
+              id={carouselId}
+              className='carousel slide'
+              data-bs-ride='false'
+            >
+              <div className='carousel-inner'>
+                {post.images.map((src, i) => (
+                  <div
+                    key={`${post._id}-img-${i}`}
+                    className={`carousel-item ${i === 0 ? 'active' : ''}`}
+                  >
+                    <img
+                      src={makeUrl(src)}
+                      alt=''
+                      className={`d-block w-100 img-fluid ${styles.postImg}`}
+                      loading='lazy'
+                      onError={e => (e.currentTarget.style.display = 'none')}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {post.images.length > 1 && (
+                <>
+                  <button
+                    className='carousel-control-prev'
+                    type='button'
+                    data-bs-target={`#${carouselId}`}
+                    data-bs-slide='prev'
+                  >
+                    <span
+                      className='carousel-control-prev-icon'
+                      aria-hidden='true'
+                    ></span>
+                    <span className='visually-hidden'>Previous</span>
+                  </button>
+                  <button
+                    className='carousel-control-next'
+                    type='button'
+                    data-bs-target={`#${carouselId}`}
+                    data-bs-slide='next'
+                  >
+                    <span
+                      className='carousel-control-next-icon'
+                      aria-hidden='true'
+                    ></span>
+                    <span className='visually-hidden'>Next</span>
+                  </button>
+
+                  <div className='carousel-indicators'>
+                    {post.images.map((_, i) => (
+                      <button
+                        key={`ind-${post._id}-${i}`}
+                        type='button'
+                        data-bs-target={`#${carouselId}`}
+                        data-bs-slide-to={i}
+                        className={i === 0 ? 'active' : ''}
+                        aria-label={`Slide ${i + 1}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })()}
+
       {Array.isArray(post.tags) && post.tags.length > 0 && (
         <div className={styles.tags}>
           {post.tags.map((tag, index) => (
@@ -141,12 +261,10 @@ const PostElement = ({ post, onLike, onDelete, onUpdate, likingPostId }) => {
       <div className={styles.postFooter}>
         <button
           onClick={() => onLike?.(post._id)}
-          className={styles.likeButton}
-          disabled={likingPostId === post._id}
+          className={`${styles.likeButton} ${isLiked ? styles.liked : ''}`}
+          disabled={isLiking}
         >
-          {likingPostId === post._id
-            ? '❤️ Loading...'
-            : `❤️ ${post.likes?.length || 0}`}
+          {isLiking ? '❤️ Loading...' : `❤️ ${post.likes?.length || 0}`}
         </button>
 
         {isAuthor && (

@@ -15,6 +15,7 @@ const NewsFeed = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState(null);
+
   const location = useLocation();
   const navigate = useNavigate();
   const { token, user } = useAuth();
@@ -55,12 +56,6 @@ const NewsFeed = () => {
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location.state, navigate]);
-
-  useEffect(() => {
-    if (token && user && posts.length > 0) {
-      loadPosts();
-    }
-  }, [user?.userId]); 
 
   const handleLike = async postId => {
     if (!token) {
@@ -133,33 +128,51 @@ const NewsFeed = () => {
     }
   };
 
+  const handleCreatePost = async (data, images) => {
+    try {
+      const form = new FormData();
+      form.append('title', data.title);
+      form.append('content', data.content);
+      if (data.location) form.append('location', data.location);
+      if (data.tags) form.append('tags', data.tags);
+      (images || []).forEach(file => form.append('images', file));
+
+      const res = await fetch(`${API_URL}/api/v1/posts`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        body: form,
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to create post');
+      }
+      const { post } = await res.json();
+      setPosts(prev => [post, ...prev]);
+      showNotification('Post created!');
+    } catch (err) {
+      showNotification(err.message || 'Failed to create post', true);
+    }
+  };
+
   const handleUpdate = async (postId, updatedData) => {
     try {
-      console.log('Client update data:', updatedData);
-
       const updatePayload = {
         title: updatedData.title,
         content: updatedData.content,
         location: updatedData.location || null,
         tags: Array.isArray(updatedData.tags)
           ? updatedData.tags
-          : (updatedData.tags || '').split(',').filter(t => t.trim()),
+          : (updatedData.tags || '')
+              .split(',')
+              .map(t => t.trim())
+              .filter(Boolean),
       };
-
-      const response = await updatePost(postId, updatePayload, token);
-
-      if (!response.post) {
-        throw new Error('Invalid server response');
-      }
-
-      setPosts(prevPosts =>
-        prevPosts.map(p => (p._id === response.post._id ? response.post : p))
-      );
-
+      const updated = await updatePost(postId, updatePayload, token);
+      if (!updated || !updated._id) throw new Error('Invalid server response');
+      setPosts(prev => prev.map(p => (p._id === updated._id ? updated : p)));
       showNotification('Post updated successfully');
       return true;
     } catch (err) {
-      console.error('Update failed:', err);
       showNotification(err.message || 'Failed to update post', true);
       return false;
     }
